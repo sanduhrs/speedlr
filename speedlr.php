@@ -48,7 +48,6 @@ $device = json_decode(file_get_contents(SPEEDLR_DEVICE_CREDENTIALS_FILE));
 
 try {
     $speedtest = json_decode(shell_exec('speedtest --json'), FALSE, 512, JSON_THROW_ON_ERROR);
-    print print_r($speedtest, TRUE) . "\n";
 
     $server_uuid = Uuid::uuid1();
     $valueRange->setValues([
