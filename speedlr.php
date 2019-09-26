@@ -61,7 +61,6 @@ try {
         $speedtest->server->cc,
         $speedtest->server->sponsor,
         $speedtest->server->id,
-        $speedtest->server->url2,
         $speedtest->server->host,
         $speedtest->server->d,
         $speedtest->server->latency,
