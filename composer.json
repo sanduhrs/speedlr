@@ -1,0 +1,17 @@
+{
+    "name": "sanduhrs/speedlr",
+    "type": "project",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Stefan Auditor",
+            "email": "stefan.auditor@erdfisch.de"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "google/apiclient": "^2.0",
+        "ramsey/uuid": "^4.0@dev",
+        "ext-json": "*"
+    }
+}
