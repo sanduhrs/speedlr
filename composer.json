@@ -12,6 +12,8 @@
     "require": {
         "google/apiclient": "^2.0",
         "ramsey/uuid": "^4.0@dev",
-        "ext-json": "*"
+        "php": "^7.3",
+        "ext-json": "*",
+        "ext-gmp": "*"
     }
 }
