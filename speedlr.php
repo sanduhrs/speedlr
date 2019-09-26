@@ -50,9 +50,22 @@ try {
     $speedtest = json_decode(shell_exec('speedtest --json'), FALSE, 512, JSON_THROW_ON_ERROR);
 
     $server_uuid = Uuid::uuid1();
-    $valueRange->setValues([
-            "values" => array_merge([$server_uuid, $device->id], array_values((array) $speedtest->server))
-    ]);
+    $valueRange->setValues(["values" => [
+        $server_uuid,
+        $device->id,
+        $speedtest->server->url,
+        $speedtest->server->lat,
+        $speedtest->server->lon,
+        $speedtest->server->name,
+        $speedtest->server->country,
+        $speedtest->server->cc,
+        $speedtest->server->sponsor,
+        $speedtest->server->id,
+        $speedtest->server->url2,
+        $speedtest->server->host,
+        $speedtest->server->d,
+        $speedtest->server->latency,
+    ]]);
     $response = $service->spreadsheets_values->append(
             $spreadsheetId,
             'Server!A1',
@@ -61,9 +74,20 @@ try {
     );
 
     $client_uuid = Uuid::uuid1();
-    $valueRange->setValues([
-            "values" => array_merge([$client_uuid, $device->id], array_values((array) $speedtest->client))
-    ]);
+    $valueRange->setValues(["values" => [
+        $client_uuid,
+        $device->id,
+        $speedtest->client->ip,
+        $speedtest->client->lat,
+        $speedtest->client->lon,
+        $speedtest->client->isp,
+        $speedtest->client->isprating,
+        $speedtest->client->rating,
+        $speedtest->client->ispdlavg,
+        $speedtest->client->ispulavg,
+        $speedtest->client->ispulavg,
+        $speedtest->client->country,
+    ]]);
     $response = $service->spreadsheets_values->append(
             $spreadsheetId,
             'Clients!A1',
