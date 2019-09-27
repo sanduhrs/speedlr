@@ -20,14 +20,7 @@ $client->useApplicationDefaultCredentials();
 $client->addScope(Google_Service_Drive::DRIVE);
 
 $service = new Google_Service_Sheets($client);
-$spreadsheetId = '16Vhv_vtoQQscbDuWAI2F3AUPKJ-EKoLdDAwm3paaGOs';
 $valueRange = new Google_Service_Sheets_ValueRange();
-
-if (!@file_get_contents(SPEEDLR_SPREADSHEET_ID_FILE)) {
-    file_put_contents(SPEEDLR_SPREADSHEET_ID_FILE, json_encode([
-        'id' => $spreadsheetId,
-    ]));
-}
 
 // Store the spreadsheet id given via parameters in a file.
 if (!$spreadsheet = json_decode(file_get_contents(SPEEDLR_SPREADSHEET_ID_FILE))) {
