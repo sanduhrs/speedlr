@@ -13,8 +13,6 @@ define('SPEEDLR_DEVICE_CREDENTIALS_FILE', __DIR__ . '/device.json');
 
 define('SPEEDLR_SPREADSHEET_ID_FILE', __DIR__ . '/spreadsheet.json');
 
-define('SPEEDLR_DEVICE_CREDENTIALS', []);
-
 putenv('GOOGLE_APPLICATION_CREDENTIALS=' . __DIR__ . '/credentials.json');
 
 $client = new Google_Client();
