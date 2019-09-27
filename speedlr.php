@@ -11,6 +11,8 @@ if (php_sapi_name() != 'cli') {
 
 define('SPEEDLR_DEVICE_CREDENTIALS_FILE', __DIR__ . '/device.json');
 
+define('SPEEDLR_SPREADSHEET_ID_FILE', __DIR__ . '/spreadsheet.json');
+
 define('SPEEDLR_DEVICE_CREDENTIALS', []);
 
 putenv('GOOGLE_APPLICATION_CREDENTIALS=' . __DIR__ . '/credentials.json');
@@ -23,35 +25,51 @@ $service = new Google_Service_Sheets($client);
 $spreadsheetId = '16Vhv_vtoQQscbDuWAI2F3AUPKJ-EKoLdDAwm3paaGOs';
 $valueRange = new Google_Service_Sheets_ValueRange();
 
-// Create unique client id and register device.
-if (!@file_get_contents(SPEEDLR_DEVICE_CREDENTIALS_FILE)) {
+file_put_contents(SPEEDLR_SPREADSHEET_ID_FILE, json_encode([
+    'id' => $spreadsheetId,
+]));
+
+// Store the spreadsheet id given via parameters in a file.
+if (!$spreadsheet = json_decode(file_get_contents(SPEEDLR_SPREADSHEET_ID_FILE))) {
     // Create unique client id.
-    $device_id = Uuid::uuid1();
+    $deviceId = Uuid::uuid1();
+    if ($argc > 1 && isset($argv[1])) {
+        file_put_contents(SPEEDLR_SPREADSHEET_ID_FILE, json_encode([
+            'id' => $argv[1],
+        ]));
+    }
+    else {
+        die("Please provide a spreadsheet id.");
+    }
+}
+
+// Create unique client id and register device.
+if (!$device = json_decode(@file_get_contents(SPEEDLR_DEVICE_CREDENTIALS_FILE))) {
+    // Create unique client id.
+    $deviceId = Uuid::uuid1();
     file_put_contents(SPEEDLR_DEVICE_CREDENTIALS_FILE, json_encode([
-        'id' => $device_id,
+        'id' => $deviceId,
     ]));
 
     // Register device.
     $valueRange = new Google_Service_Sheets_ValueRange();
     $valueRange->setValues(["values" => [
-        $device_id
+        $deviceId
     ]]);
     $response = $service->spreadsheets_values->append(
-            $spreadsheetId,
-            'Devices!A1',
-            $valueRange,
-            ["valueInputOption" => "RAW"]
+        $spreadsheet->id,
+        'Devices!A1',
+        $valueRange,
+        ["valueInputOption" => "RAW"]
     );
 }
-
-$device = json_decode(file_get_contents(SPEEDLR_DEVICE_CREDENTIALS_FILE));
 
 try {
     $speedtest = json_decode(shell_exec('speedtest --json'), FALSE, 512, JSON_THROW_ON_ERROR);
 
-    $server_uuid = Uuid::uuid1();
+    $serverId = Uuid::uuid1();
     $valueRange->setValues(["values" => [
-        $server_uuid,
+        $serverId,
         $device->id,
         $speedtest->server->url,
         $speedtest->server->lat,
@@ -66,15 +84,15 @@ try {
         $speedtest->server->latency,
     ]]);
     $response = $service->spreadsheets_values->append(
-            $spreadsheetId,
-            'Server!A1',
-            $valueRange,
-            ["valueInputOption" => "RAW"]
+        $spreadsheet->id,
+        'Server!A1',
+        $valueRange,
+        ["valueInputOption" => "RAW"]
     );
 
-    $client_uuid = Uuid::uuid1();
+    $clientId = Uuid::uuid1();
     $valueRange->setValues(["values" => [
-        $client_uuid,
+        $clientId,
         $device->id,
         $speedtest->client->ip,
         $speedtest->client->lat,
@@ -88,18 +106,18 @@ try {
         $speedtest->client->country,
     ]]);
     $response = $service->spreadsheets_values->append(
-            $spreadsheetId,
-            'Clients!A1',
-            $valueRange,
-            ["valueInputOption" => "RAW"]
+        $spreadsheet->id,
+        'Clients!A1',
+        $valueRange,
+        ["valueInputOption" => "RAW"]
     );
 
-    $speedtest_uuid = Uuid::uuid1();
+    $speedtestId = Uuid::uuid1();
     $valueRange->setValues(["values" => [
-        $speedtest_uuid,
+        $speedtestId,
         $device->id,
-        $server_uuid,
-        $client_uuid,
+        $serverId,
+        $clientId,
         $speedtest->download,
         $speedtest->upload,
         $speedtest->ping,
@@ -109,10 +127,10 @@ try {
         $speedtest->share,
     ]]);
     $response = $service->spreadsheets_values->append(
-            $spreadsheetId,
-            'Speedtest!A1',
-            $valueRange,
-            ["valueInputOption" => "RAW"]
+        $spreadsheet->id,
+        'Speedtest!A1',
+        $valueRange,
+        ["valueInputOption" => "RAW"]
     );
 }
 catch(\Exception $e) {
